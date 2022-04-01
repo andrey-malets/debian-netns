@@ -42,5 +42,14 @@ then
 			exit 1
 			;;
 	esac
+
+    for IFACE_TO_MOVE in ${IF_MOVE_IFACE}; do
+        if iwconfig "${IFACE_TO_MOVE}" >/dev/null 2>&1; then
+            PHY="phy$(iw dev ${IFACE_TO_MOVE} info | grep wiphy | awk '{print $2}')"
+            iw phy ${PHY} set netns name "${IF_PEER_NETNS}"
+        else
+            ip link set ${IFACE_TO_MOVE} netns "${IF_PEER_NETNS}"
+        fi
+    done
 fi
 
